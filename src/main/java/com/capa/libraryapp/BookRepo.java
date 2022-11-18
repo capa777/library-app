@@ -14,11 +14,28 @@ public class BookRepo {
     JdbcTemplate jdbcTemplate;
 
     public List<Book> getAll(){
-        return jdbcTemplate.query("Select id,title,author,rating,description from book",
+        return jdbcTemplate.query("SELECT id,title,author,rating,description FROM book",
                 BeanPropertyRowMapper.newInstance(Book.class));
     }
 
     public Book getOne(int id){
-        return jdbcTemplate.queryForObject("Select id,title,author,rating,description from book where id = ?", BeanPropertyRowMapper.newInstance(Book.class),id);
+        return jdbcTemplate.queryForObject("SELECT id,title,author,rating,description FROM book WHERE id = ?", BeanPropertyRowMapper.newInstance(Book.class),id);
+    }
+
+    public int save(List<Book> books){
+        for (Book book : books) {
+            jdbcTemplate.update("INSERT INTO book(title,author,rating,description) VALUES (?,?,?,?)",
+                    book.getTitle(),book.getAuthor(),book.getRating(),book.getDescription());
+        }
+        return 1;
+    }
+
+    public int update(Book book){
+        return jdbcTemplate.update("UPDATE book SET title=?,author=?,rating=?,description=? WHERE id = ?",
+                book.getTitle(),book.getAuthor(),book.getRating(),book.getDescription(),book.getId());
+    }
+
+    public int delete(int id){
+        return jdbcTemplate.update("DELETE FROM book WHERE id = ?",id);
     }
 }
